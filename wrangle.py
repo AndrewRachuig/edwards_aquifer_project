@@ -57,7 +57,7 @@ def clean_all_dataframes(aquifer, temps, precip, pop, usage):
     Returns: aquifer, weather, pop, usage as cleaned versions of their previously dirty dataframes'''
     #Cleaning aquifer by dropping unused column, renaming columns and setting the datetime as the index
     aquifer = aquifer.drop('Site', axis=1)
-    aaquifer = aquifer.rename(columns = {'DailyHighDate': 'date', 'WaterLevelElevation': 'water_level_elevation'}).set_index('date').sort_index()
+    aquifer = aquifer.rename(columns = {'DailyHighDate': 'date', 'WaterLevelElevation': 'water_level_elevation'}).set_index('date').sort_index()
 
 
     #Cleaning temps by dropping unused columns, renaming columns and setting the datetime as the index

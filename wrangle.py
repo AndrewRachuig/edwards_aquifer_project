@@ -9,6 +9,8 @@ from re import sub
 def get_dataframes():
     '''
     This function pulls all local csv files needed for this project and puts them into dataframes. It then returns them all out.
+
+    Returns: dataframes for the following: aquifer, temps, precip, pop, usage
     '''
     aquifer = pd.read_csv('data_files/aquifer_j17_well_data.csv', parse_dates=[1])
     temps = pd.read_csv('data_files/monthly_avg_temp_bexar_county.csv', parse_dates=[8])
@@ -55,8 +57,8 @@ def clean_all_dataframes(aquifer, temps, precip, pop, usage):
     Returns: aquifer, weather, pop, usage as cleaned versions of their previously dirty dataframes'''
     #Cleaning aquifer by dropping unused column, renaming columns and setting the datetime as the index
     aquifer = aquifer.drop('Site', axis=1)
-    aaquifer = aquifer.rename(columns = {'DailyHighDate': 'date'}).set_index('date').sort_index()
-    aquifer = column_renamer(aquifer)
+    aaquifer = aquifer.rename(columns = {'DailyHighDate': 'date', 'WaterLevelElevation': 'water_level_elevation'}).set_index('date').sort_index()
+
 
     #Cleaning temps by dropping unused columns, renaming columns and setting the datetime as the index
     temps = temps.rename(columns = {'DATA 0': 'avg_monthly_temp', 'TIME 0': 'date'})

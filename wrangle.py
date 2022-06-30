@@ -88,3 +88,24 @@ def clean_all_dataframes(aquifer, temps, precip, pop, usage):
     weather = weather.set_index('date').sort_index()
 
     return aquifer, weather, pop, usage
+
+def train_test_split(aquifer):
+    '''
+    This function takes in a prepared and cleaned aquifer dataframe and splits it in preparation for EDA and modeling. It displays a plot of the distribution
+    of the split and returns train and test dataframes.
+
+    Parameters: aquifer - the aquifer dataframe previously pulled in and cleaned
+
+    Returns:    train - dataframe of the train set of aquifer ready for eda and modeling
+                test - dataframe of the test set of aquifer ready for modeling
+    '''
+    train_size = .85
+    n = aquifer.shape[0]
+    test_start_index = round(train_size * n)
+
+    train = aquifer[:test_start_index] # everything up (not including) to the test_start_index
+    test = aquifer[test_start_index:] # everything from the test_start_index to the end
+
+    plt.plot(train.index, train.water_level_elevation)
+    plt.plot(test.index, test.water_level_elevation)
+    return train, test

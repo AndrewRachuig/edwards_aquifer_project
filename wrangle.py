@@ -81,6 +81,7 @@ def clean_all_dataframes(aquifer, temps, precip, pop, usage):
     usage = column_renamer(usage)
     usage = usage.rename(columns = {'year':'date'})
     usage = usage.set_index('date').sort_index()
+    usage = usage.dropna(axis=1)
     usage['total_consumption'] = usage.municipal + usage.manufacturing + usage.mining + usage.power + usage.irrigation + usage.livestock
 
     # Making a merged dataframe of temps and precip

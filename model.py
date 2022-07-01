@@ -11,6 +11,18 @@ plt.rcParams["figure.figsize"] = (14, 8)
 import wrangle
 
 def splits(aquifer):
+    '''
+    This function takes in a prepared and cleaned aquifer dataframe and splits it in preparation modeling. The train size is 60% of the total data.
+    The validate size is 25% of the total data. The test size is 15% of the total data. The function also displays a plot of the distribution of the split and 
+    returns train, validate and test dataframes.
+
+    Parameters: aquifer - the aquifer dataframe previously pulled in and cleaned
+
+    Returns:    train - dataframe of the train set of aquifer ready for modeling
+                validate - datafrmae of the validate set of aquifer ready for modeling
+                test - dataframe of the test set of aquifer ready for modeling
+    '''
+
     # Setting train size to be 60% of the total dataset
     train_size = int(round(aquifer.shape[0] * 0.6))
 

@@ -107,3 +107,64 @@ def seasonal_decomposition_graphs(train):
 	result = sm.tsa.seasonal_decompose(y)
 	result.plot()
 	None
+
+def precip_elevation_monthly_corr_test(train, weather):
+	monthly_resample = train.resample('M').mean()
+	monthly_resample['precipitation'] = weather.total_monthly_precip.resample('M').mean()
+
+	# Running a pearson-r correlation test, printing out if the result is statistically significant and the r correlation value.
+	corr, p = stats.pearsonr(monthly_resample.dropna().water_level_elevation, monthly_resample.dropna().precipitation)
+
+	print(f'The pearson r test shows a result of {p} and an r value of {corr}.\nSee graph below.')
+
+	sns.lmplot(data = monthly_resample.dropna(), y='water_level_elevation', x ='precipitation')
+
+def precip_elevation_yearly_corr_test(train, weather):
+	yearly_resample = train.copy()
+	yearly_resample = yearly_resample.resample('A').mean()
+	yearly_resample['precipitation'] = (weather.total_monthly_precip.resample('A').mean()).interpolate(method='polynomial', order=2)
+
+	# Running a pearson-r correlation test, printing out if the result is statistically significant and the r correlation value.
+	corr, p = stats.pearsonr(yearly_resample.water_level_elevation.dropna(), yearly_resample.precipitation.dropna())
+
+	print(f'The pearson r test shows a result of {p} and an r value of {corr}.\nSee graph below.')
+
+	sns.lmplot(data = yearly_resample, y='water_level_elevation', x ='precipitation')
+
+
+def precip_usage_yearly_corr_test(train, weather, usage):
+	yearly_resample = train.copy()
+	yearly_resample = yearly_resample.resample('A').mean()
+	yearly_resample['precipitation'] = (weather.total_monthly_precip.resample('A').mean()).interpolate(method='polynomial', order=2)
+	yearly_resample['total_water_consumption'] = (usage.total_consumption.resample('A').mean()).interpolate(method='polynomial', order=2).astype('int64')
+
+	# Running a pearson-r correlation test, printing out if the result is statistically significant and the r correlation value.
+	corr, p = stats.pearsonr(yearly_resample.dropna().precipitation, yearly_resample.dropna().total_water_consumption)
+
+	print(f'The pearson r test shows a result of {p} and an r value of {corr}.\nSee graph below.')
+
+	sns.lmplot(data = yearly_resample.dropna(), y='total_water_consumption', x ='precipitation')
+
+def usage_elevation_yearly_corr_test(train, usage):
+	yearly_resample = train.copy()
+	yearly_resample = yearly_resample.resample('A').mean()
+	yearly_resample['total_water_consumption'] = (usage.total_consumption.resample('A').mean()).interpolate(method='polynomial', order=2).astype('int64')
+
+	# Running a pearson-r correlation test, printing out if the result is statistically significant and the r correlation value.
+	corr, p = stats.pearsonr(yearly_resample.dropna().water_level_elevation, yearly_resample.dropna().total_water_consumption)
+
+	print(f'The pearson r test shows a result of {p} and an r value of {corr}.\nSee graph below.')
+
+	sns.lmplot(data = yearly_resample.dropna(), x='total_water_consumption', y ='water_level_elevation')
+
+def pop_elevation_yearly_corr_test(train, pop):
+	yearly_resample = train.copy()
+	yearly_resample = yearly_resample.resample('A').mean()
+	yearly_resample['population'] = (pop.resample('A').mean()).interpolate(method='polynomial', order=2).astype('int64')
+
+	# Running a pearson-r correlation test, printing out if the result is statistically significant and the r correlation value.
+	corr, p = stats.pearsonr(yearly_resample.dropna().water_level_elevation, yearly_resample.dropna().population)
+
+	print(f'The pearson r test shows a result of {p} and an r value of {corr}.\nSee graph below.')
+
+	sns.lmplot(data = yearly_resample.dropna(), y='water_level_elevation', x ='population')

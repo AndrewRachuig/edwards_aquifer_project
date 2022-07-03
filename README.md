@@ -35,7 +35,7 @@ This project is very limited in scope in that it attempts to understand a small 
 ---
 ## Deliverables
 - Construct a Final Report Notebook wherein I show how I arrived at the MVP model. Throughout the notebook, document conclusions, takeaways, and next steps.
-    - Include [**Conclusions, reccomendations, next steps**](#Conclusions,-Recommendations,-Next-Steps)
+    - Include [**Conclusions, recomendations, next steps**](#Conclusions,-Recommendations,-Next-Steps)
 - Deliver my github repo with final report to be analyzed by colleagues  
 - Create README.md with data dictionary, project and business goals, initial hypothesis and an executive summary
 - Project summary and writeup for my resume or other professional portfolio pieces

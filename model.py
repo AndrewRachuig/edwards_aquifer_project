@@ -7,6 +7,8 @@ import statsmodels.api as sm
 from statsmodels.tsa.api import Holt
 from sklearn.metrics import mean_squared_error
 
+from prophet import Prophet
+
 plt.rcParams["figure.figsize"] = (14, 8)
 import wrangle
 
@@ -77,7 +79,8 @@ def plot_and_eval(train, validate, yhat_df, target_var, model_type):
     plt.figure(figsize = (12,4))
     plt.plot(train[target_var], label='Train', linewidth=1)
     plt.plot(validate[target_var], label='Validate', linewidth=1)
-    plt.plot(yhat_df[target_var])
+    plt.plot(yhat_df[target_var], label = 'Model Predictions')
+    plt.legend()
     plt.title(model_type)
     rmse = evaluate(validate, yhat_df, target_var)
     print(f'Predicting for the {model_type} model -- RMSE: {rmse}')
@@ -158,7 +161,7 @@ def prophet_setup(train):
     train_for_prophet.head()
     return train_for_prophet
 
-def prophet_modeling(train, validate, train_for_prophet, eval_df):
+def prophet_model(train, validate, train_for_prophet, eval_df):
     # Creating the Prophet model
     model = Prophet()
     # Fitting the model to the train_for_prophet dataframe
@@ -170,11 +173,73 @@ def prophet_modeling(train, validate, train_for_prophet, eval_df):
     # Forecasting/Predicting into the future of validate
     forecast = model.predict(future)
     # Plotting out the trend, as well as weekly and yearly seasonality
-    model.plot_components(forecast)
-    None
+    # model.plot_components(forecast)
+    # None
+
     # putting the predicted values into the yhat_df so I can use the plot and eval function to see RMSE and performance
-    yhat_df['water_level_elevation'] = forecast.yhat[-7989:].values
+    yhat_df = pd.DataFrame({'water_level_elevation': forecast.yhat[-7989:].values}, index=validate.index)
+    # yhat_df['water_level_elevation'] = forecast.yhat[-7989:].values
     plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = 'facebook_prophet')
-    # Adding the Facebook Prophet model to the eval_df 
+    # # Adding the Facebook Prophet model to the eval_df 
     eval_df = append_eval_df(eval_df, validate, yhat_df, model_type = 'facebook_prophet', target_var = 'water_level_elevation')
     return eval_df
+
+def modified_prophet_model(train, validate, train_for_prophet, eval_df):
+    # Creating the Prophet model
+    model = Prophet(growth="flat")
+    # Fitting the model to the train_for_prophet dataframe
+    model.fit(train_for_prophet)
+    # Making the future dataframe to use in the next step for forecasting predictions, the periods parameter here equals
+    # the length of the validate dataframe.
+    length_of_validate = validate.size
+    future = model.make_future_dataframe(periods = length_of_validate)
+    # Forecasting/Predicting into the future of validate
+    forecast = model.predict(future)
+    # Plotting out the trend, as well as weekly and yearly seasonality
+    # model.plot_components(forecast)
+    # None
+    
+    # putting the predicted values into the yhat_df so I can use the plot and eval function to see RMSE and performance
+    yhat_df = pd.DataFrame({'water_level_elevation': forecast.yhat[-7989:].values}, index=validate.index)
+    # yhat_df['water_level_elevation'] = forecast.yhat[-7989:].values
+    plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = 'modified_facebook_prophet')
+    # # Adding the Facebook Prophet model to the eval_df 
+    eval_df = append_eval_df(eval_df, validate, yhat_df, model_type = 'modified_facebook_prophet', target_var = 'water_level_elevation')
+    return eval_df
+
+def mod_prophet_testing(train, validate, test, train_for_prophet):
+    # Recreating the Prophet model
+    model = Prophet(growth='flat')
+    # Fitting the model to the train_for_prophet dataframe
+    model.fit(train_for_prophet)
+
+    # Making the future dataframe to use in the next step for forecasting predictions, the periods parameter here equals
+    # equals the length of the validate dataframe.
+    future = model.make_future_dataframe(periods = 12777)
+
+    # Forecasting/Predicting into the future of validate
+    forecast = model.predict(future)
+
+    # putting the predicted values into the yhat_df so I can use the plot and eval function to see RMSE and performance
+    yhat_final = test.copy()
+    yhat_final['water_level_elevation'] = forecast.yhat[-4788:].values
+    yhat_final['two_year_moving_avg_baseline'] = round(train['water_level_elevation'].rolling(730).mean()[-1], 2)
+
+    # Final results plot
+    plt.figure(figsize = (18, 10))
+    plt.plot(train.water_level_elevation, label = 'train')
+    plt.plot(validate.water_level_elevation, label = 'validate')
+    plt.plot(test.water_level_elevation, label = 'test')
+    plt.plot(yhat_final.water_level_elevation, label = 'FB Prophet prediction', color = 'black')
+    plt.plot(yhat_final.two_year_moving_avg_baseline, label = "2 Year rolling average Baseline")
+    plt.legend()
+    plt.show()
+
+    # RMSE of FB Prophet model and baseline to see results
+
+    rmse_prophet = round(mean_squared_error(test.water_level_elevation, yhat_final.water_level_elevation)**(1/2),2)
+
+    rmse_baseline = round(mean_squared_error(test.water_level_elevation, yhat_final.two_year_moving_avg_baseline)**(1/2),2)
+
+    print(f'The RMSE for the FB prophet model on out-of-sample test data is:{rmse_prophet}.')
+    print(f'The RMSE for the two year moving avg baseline on out-of-sample test data is:{rmse_baseline}.')

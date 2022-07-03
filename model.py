@@ -80,7 +80,7 @@ def plot_and_eval(train, validate, yhat_df, target_var, model_type):
     plt.plot(yhat_df[target_var])
     plt.title(model_type)
     rmse = evaluate(validate, yhat_df, target_var)
-    print(model_type, ' model -- RMSE: {:.0f}'.format(rmse))
+    print(f'Predicting for the {model_type} model -- RMSE: {rmse}')
     plt.show()
 
 def append_eval_df(eval_df, validate, yhat_df, model_type, target_var):
@@ -101,4 +101,50 @@ def lov_model(train, validate, eval_df):
     yhat_df = pd.DataFrame({'water_level_elevation': [last_observed_level]}, index=validate.index)
     plot_and_eval(train, validate, yhat_df, 'water_level_elevation', model_type)
     eval_df = append_eval_df(eval_df, validate, yhat_df, model_type, target_var = 'water_level_elevation')
+    return eval_df
+
+def simple_avg_model(train, validate, eval_df):
+    # Grabbing the historical average of train and assigning it to a variable
+    model_type = 'simple_avg'
+    avg_elevation = round(train['water_level_elevation'].mean(), 2)
+    yhat_df = pd.DataFrame({'water_level_elevation': [avg_elevation]}, index=validate.index)
+    plot_and_eval(train, validate, yhat_df, 'water_level_elevation', model_type)
+    eval_df = append_eval_df(eval_df, validate, yhat_df, model_type, target_var = 'water_level_elevation')
+    return eval_df
+
+def moving_average_model(train, validate, eval_df):
+    # Grabbing the historical average of train and assigning it to a variable
+    model_type = 'moving_average'
+
+    periods = [7, 14, 30, 60, 365, 730, 1825, 3650]
+
+    for p in periods: 
+        rolling_water_levels = round(train['water_level_elevation'].rolling(p).mean()[-1], 2)
+        yhat_df = pd.DataFrame({'water_level_elevation': [rolling_water_levels]}, index=validate.index)
+        rmse = evaluate(validate, yhat_df, target_var = 'water_level_elevation')
+        print(f"\nPredicting the {p} day Moving Average of {rolling_water_levels} -- RMSE: {rmse}")
+        model_type = str(p) + '_day_moving_avg'
+        for col in train.columns:
+            eval_df = append_eval_df(eval_df, validate, yhat_df, model_type, target_var = 'water_level_elevation')
+    
+    print(f"\n\nPlot of the best Moving Average model")
+    rolling_water_levels = round(train['water_level_elevation'].rolling(730).mean()[-1], 2)
+    yhat_df = pd.DataFrame({'water_level_elevation': [rolling_water_levels]},
+                          index=validate.index)
+    plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = '730_day_moving_avg')
+
+    return eval_df
+
+def holts_model(train, validate, eval_df):
+    # Creating the initial Holt's Object
+    model = Holt(train, exponential=False, damped=True)
+    # Fitting the Holt's object
+    model = model.fit(optimized=True)
+    #Making predictions for each date in validate
+    yhat_items = model.predict(start = validate.index[0], end = validate.index[-1])
+    # add predictions to yhat_df
+    yhat_df = pd.DataFrame({'water_level_elevation': yhat_items}, index=validate.index)
+    # yhat_df['water_level_elevation'] = pd.DataFrame(yhat_items)
+    plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = 'holts_optimized')
+    eval_df = append_eval_df(eval_df, validate, yhat_df, model_type = 'holts_optimized', target_var = 'water_level_elevation')
     return eval_df

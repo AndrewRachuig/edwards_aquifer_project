@@ -33,6 +33,12 @@ def train_test_split(aquifer):
     return train, test
 
 def distribution_graphs(train):
+	'''
+	This function takes in the train dataframe and plots out a QQ (Quantile-Quantile Plot) as well as a histogram to show how well the data approximates a normal distribution 
+	
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
+
 	plt.figure(figsize=(15,6))
 	plt.subplot(121)
 	stats.probplot(train.water_level_elevation, plot = pylab)
@@ -41,6 +47,11 @@ def distribution_graphs(train):
 	plt.show()
 
 def monthly_distribution(train):
+	'''
+	This function takes in the train dataframe and plots the average water level separated by month to see if there are any differences that might show up seasonally.
+
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
 	ax = train.water_level_elevation.groupby(train.water_level_elevation.index.strftime('%m-%b')).mean().plot.bar(width=.9, ec='black')
 	plt.xticks(rotation=0)
 	ax.set(title='Average Water Level by Month', xlabel='Month', ylabel='Water Level Elevation (ft)')
@@ -52,12 +63,22 @@ def monthly_distribution(train):
 	plt.show()
 
 def change_by_month(train):
-	# Change month to month
+	'''
+	This function takes in the train dataframe and plots change over time when looking at month to month averages.
+
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
+
 	y = train.water_level_elevation
 	y.resample('M').mean().diff().plot(title='Average month-to-month change in water level elevation')
 	plt.show()
 
 def annual_seasonality(train):
+	'''
+	This function takes in the train dataframes and plots annual seasonality when observing by the decade.
+
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
 	y = train.water_level_elevation
 	y.groupby([(y.index.year//10)*10, y.index.strftime('%m-%b')]).mean().unstack(0).plot(title='Seasonal Plot')
 	plt.legend(loc='lower left')

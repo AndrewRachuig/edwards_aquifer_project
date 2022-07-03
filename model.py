@@ -148,3 +148,33 @@ def holts_model(train, validate, eval_df):
     plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = 'holts_optimized')
     eval_df = append_eval_df(eval_df, validate, yhat_df, model_type = 'holts_optimized', target_var = 'water_level_elevation')
     return eval_df
+
+def prophet_setup(train):
+    # Making a new Dataframe appropriate for Prophet to use
+    train_for_prophet = pd.DataFrame()
+    train_for_prophet['ds'] = train.index
+    train_for_prophet['y'] = train.water_level_elevation.values
+    # Checking the new dataframe to confirm it looks appropriate for Prophet
+    train_for_prophet.head()
+    return train_for_prophet
+
+def prophet_modeling(train, validate, train_for_prophet, eval_df):
+    # Creating the Prophet model
+    model = Prophet()
+    # Fitting the model to the train_for_prophet dataframe
+    model.fit(train_for_prophet)
+    # Making the future dataframe to use in the next step for forecasting predictions, the periods parameter here equals
+    # the length of the validate dataframe.
+    length_of_validate = validate.size
+    future = model.make_future_dataframe(periods = length_of_validate)
+    # Forecasting/Predicting into the future of validate
+    forecast = model.predict(future)
+    # Plotting out the trend, as well as weekly and yearly seasonality
+    model.plot_components(forecast)
+    None
+    # putting the predicted values into the yhat_df so I can use the plot and eval function to see RMSE and performance
+    yhat_df['water_level_elevation'] = forecast.yhat[-7989:].values
+    plot_and_eval(train, validate, yhat_df, target_var = 'water_level_elevation', model_type = 'facebook_prophet')
+    # Adding the Facebook Prophet model to the eval_df 
+    eval_df = append_eval_df(eval_df, validate, yhat_df, model_type = 'facebook_prophet', target_var = 'water_level_elevation')
+    return eval_df

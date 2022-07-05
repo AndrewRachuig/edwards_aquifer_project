@@ -27,33 +27,40 @@ Ultimately, the goal is to predict future water levels through Time Series Analy
 ## Project Deliverables
 - A Final Report Notebook wherein I show how I arrived at the MVP model. Throughout the notebook, document conclusions, takeaways, and next steps.
     - Include [**Conclusions, recommendations, next steps**](#Conclusions,-Recommendations,-Next-Steps)
-- A github repo with final report
+- A GitHub repo with final report
 - A README.md containing a data dictionary, project and business goals, initial hypothesis and an executive summary for my github repo
 - Project summary and writeup for my resume or other professional portfolio pieces
 ---
 
 ## Data Dictionary
 
-Target|Datatype|Definition|
+|Target|Datatype|Definition|
 |:-------|:--------|:----------|
-| water_level_elevation   | 31919 non-null: float64 | Edwards Aquifer J17 Index Well water elevation levels Nov 1932 - June 2022 |
+| water_level_elevation| 31919 non-null: float64 | Edwards Aquifer J17 Index Well water elevation levels Nov 1932 - June 2022 |
+
 source: https://www.edwardsaquifer.org/science-maps/aquifer-data/historical-data/
 
 The following are additional features I pulled in from various sources to better understand the data.
 
 |Feature|Datatype|Definition|
 |:-------|:--------|:----------|
-| avg_monthly_temp    | 1529 non-null: float64 |     The average monthly temperature for Bexar county Jan 1895 - May 2022 |
-| total_monthly_precip    | 1529 non-null: float64 |     The total monthly precipitation for Bexar county Jan 1895 - May 2022  |
+| avg_monthly_temp      | 1529 non-null: float64   |     The average monthly temperature for Bexar county Jan 1895 - May 2022 |
+| total_monthly_precip  | 1529 non-null: float64   |     The total monthly precipitation for Bexar county Jan 1895 - May 2022  |
+
 source: https://usafacts.org/issues/climate/state/texas/county/bexar-county
 
 |Feature|Datatype|Definition|
-| population    | 38 non-null: int64 |    Yearly population for Bexar county; prior to 2000 the population is given as an average for the decade  |
+|:-------|:--------|:----------|
+| population           | 38 non-null: int64      |    Yearly population for Bexar county; prior to 2000 the population is given as an average for the decade  |
+
 source: https://worldpopulationreview.com/us-counties/tx/bexar-county-population
 
 |Feature|Datatype|Definition|
-| total_consumption    | 36 non-null: int64 |    The total annual water use estimates for Bexar county from 1984 - 2019 |
+|:-------|:--------|:----------|
+| total_consumption    | 36 non-null: int64      |    The total annual water use estimates for Bexar county from 1984 - 2019 |
+
 source: https://www.twdb.texas.gov/waterplanning/waterusesurvey/estimates/index.asp
+
 ---
 ### Questions/thoughts I have of the Data
 - I suspect there are predictable yearly variation patterns for the target variable, as well as larger seasons that I'm not yet aware of.
@@ -61,9 +68,6 @@ source: https://www.twdb.texas.gov/waterplanning/waterusesurvey/estimates/index.
 - I also think precipitation amounts and water usage amounts will affect the water level. 
 - It seems logical that precipitation, water usage, population, and water level would all be correlated to one another; unknown if there are causal relationships.
 ---
-
-
-
 ## Data Science Pipeline
 #### Plan
 - **Acquire** data from various sources:
@@ -125,8 +129,8 @@ source: https://www.twdb.texas.gov/waterplanning/waterusesurvey/estimates/index.
 - Summarize and visualize results. Document results and takeaways
 ---
 #### Plan &rarr; Acquire &rarr; Prepare &rarr; Explore &rarr; Model &rarr; Deliver
-- Go back over all code and make sure there is adequate comments on code
-- Make sure the explanations in the Final Report notebook makes sense, and adequately explain the info I want to come across to various readers
+- Go back over all code and make sure there are adequate comments on code
+- Make sure the explantory text in the Final Report notebook properly conveys the information I am presenting
 - Finish readme.md and other GitHub work to make the project presentable
 ---
 # Executive Summary

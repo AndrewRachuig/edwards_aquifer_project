@@ -27,7 +27,7 @@ Ultimately, the goal is to predict future water levels through Time Series Analy
 
 ## Project Deliverables
 - A Final Report Notebook wherein I show how I arrived at the MVP model. Throughout the notebook, document conclusions, takeaways, and next steps.
-    - Include [**Conclusions, recommendations, next steps**](#Conclusions,-Recommendations,-Next-Steps)
+    - Include **Conclusions, recommendations, next steps**
 - A GitHub repo with final report
 - A README.md containing a data dictionary, project and business goals, initial hypothesis and an executive summary for my github repo
 - Project summary and writeup for my resume or other professional portfolio pieces

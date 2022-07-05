@@ -21,7 +21,7 @@ def splits(aquifer):
     Parameters: aquifer - the aquifer dataframe previously pulled in and cleaned
 
     Returns:    train - dataframe of the train set of aquifer ready for modeling
-                validate - datafrmae of the validate set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
                 test - dataframe of the test set of aquifer ready for modeling
     '''
 
@@ -98,6 +98,17 @@ def append_eval_df(eval_df, validate, yhat_df, model_type, target_var):
     return eval_df.append(d, ignore_index = True)
 
 def lov_model(train, validate, eval_df):
+    '''
+    This function takes in train and validate dataframes as well as the eval_df dataframe; it then creates a prediction for future values
+    based on the last observed value. It plots out this prediction against validate and computes RMSE. RMSE is stored in the eval_df
+    dataframe with the model name to be evaluated with all other models later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the lov_model information
+    '''
     # Grabbing the most recent observation in train and assigning it to a variable
     model_type = 'last_observed_value'
     last_observed_level = train['water_level_elevation'][-1:][0]
@@ -107,6 +118,17 @@ def lov_model(train, validate, eval_df):
     return eval_df
 
 def simple_avg_model(train, validate, eval_df):
+    '''
+    This function takes in train and validate dataframes as well as the eval_df dataframe; it then creates a prediction for future values
+    based on the simple average of the data. It plots out this prediction against validate and computes RMSE. RMSE is stored in the eval_df
+    dataframe with the model name to be evaluated with all other models later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the simple average model information
+    '''
     # Grabbing the historical average of train and assigning it to a variable
     model_type = 'simple_avg'
     avg_elevation = round(train['water_level_elevation'].mean(), 2)
@@ -116,6 +138,18 @@ def simple_avg_model(train, validate, eval_df):
     return eval_df
 
 def moving_average_model(train, validate, eval_df):
+    '''
+    This function takes in train and validate dataframes as well as the eval_df dataframe; it then creates a prediction for future values
+    based on the moving averages for a the following time periods [7, 14, 30, 60, 365, 730, 1825, 3650]. It plots out this prediction 
+    against validate and computes RMSE. RMSE is stored in the eval_df dataframe with the model name to be evaluated with all other models
+    later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the information for various moving average models for all the periods specified
+    '''
     # Grabbing the historical average of train and assigning it to a variable
     model_type = 'moving_average'
 
@@ -139,6 +173,17 @@ def moving_average_model(train, validate, eval_df):
     return eval_df
 
 def holts_model(train, validate, eval_df):
+    '''
+    This function takes in train and validate dataframes as well as the eval_df dataframe; it then creates a prediction for future values
+    based on the Holts Linear Trend model. It plots out this prediction against validate and computes RMSE. RMSE is stored in the 
+    eval_df dataframe with the model name to be evaluated with all other models later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the information for the Holts Linear Trend model
+    '''
     # Creating the initial Holt's Object
     model = Holt(train, exponential=False, damped=True)
     # Fitting the Holt's object
@@ -153,6 +198,10 @@ def holts_model(train, validate, eval_df):
     return eval_df
 
 def prophet_setup(train):
+    '''
+    This function takes in the train dataframe and puts it into a format compatible with the Facebook Prophet model. It returns out
+    the newly formated dataframe "train_for_prophet".
+    '''
     # Making a new Dataframe appropriate for Prophet to use
     train_for_prophet = pd.DataFrame()
     train_for_prophet['ds'] = train.index
@@ -162,6 +211,18 @@ def prophet_setup(train):
     return train_for_prophet
 
 def prophet_model(train, validate, train_for_prophet, eval_df):
+    '''
+    This function takes in train, validate, and train_for_prophet dataframes as well as the eval_df dataframe; it then creates a 
+    prediction for future values using the Facebook Prophet model. It plots out this prediction against validate and computes RMSE. 
+    RMSE is stored in the eval_df dataframe with the model name to be evaluated with all other models later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                train_for_prophet - dataframe with the values of train but reformated for use with Facebook Prophet
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the information for the Facebook Prophet model
+    '''
     # Creating the Prophet model
     model = Prophet()
     # Fitting the model to the train_for_prophet dataframe
@@ -185,6 +246,18 @@ def prophet_model(train, validate, train_for_prophet, eval_df):
     return eval_df
 
 def modified_prophet_model(train, validate, train_for_prophet, eval_df):
+    '''
+    This function takes in train, validate, and train_for_prophet dataframes as well as the eval_df dataframe; it then creates a 
+    prediction for future values using a tweaked version of the Facebook Prophet model. It plots out this prediction against validate 
+    and computes RMSE. RMSE is stored in the eval_df dataframe with the model name to be evaluated with all other models later.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                train_for_prophet - dataframe with the values of train but reformated for use with Facebook Prophet
+                eval_df - dataframe created to store RMSE values of all models created
+
+    Returns: eval_df - updated with the information for the modified Facebook Prophet model
+    '''
     # Creating the Prophet model
     model = Prophet(growth="flat")
     # Fitting the model to the train_for_prophet dataframe
@@ -208,6 +281,16 @@ def modified_prophet_model(train, validate, train_for_prophet, eval_df):
     return eval_df
 
 def mod_prophet_testing(train, validate, test, train_for_prophet):
+    '''
+    This function takes in train, validate, test and train_for_prophet dataframes; it then creates a prediction for future values using 
+    the modified Facebook Prophet model. It plots out this prediction against test and computes RMSE while similarly printing RMSE results
+    for the baseline model.
+
+    Parameters: train - dataframe of the train set of aquifer ready for modeling
+                validate - dataframe of the validate set of aquifer ready for modeling
+                test - dataframe of the test set of aquifer ready for modeling
+                train_for_prophet - dataframe with the values of train but reformated for use with Facebook Prophet
+    '''
     # Recreating the Prophet model
     model = Prophet(growth='flat')
     # Fitting the model to the train_for_prophet dataframe

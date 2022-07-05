@@ -75,7 +75,7 @@ def change_by_month(train):
 
 def annual_seasonality(train):
 	'''
-	This function takes in the train dataframes and plots annual seasonality when observing by the decade.
+	This function takes in the train dataframe and plots annual seasonality when observing by the decade.
 
 	Parameters: train - dataframe containing the target variable ready for EDA
 	'''
@@ -85,6 +85,17 @@ def annual_seasonality(train):
 	plt.show()
 
 def lag_plots(train):
+	'''
+	This function takes in the train dataframe and creates a series of lag plots for the following timeframes:
+	Lag of 1 day
+	Lag of 1 Week (7 days)
+	Lag of 1 Month (30 days)
+	Lag of half a year (183 days)
+	Lag of 1 year (365 days)
+	Lag of 2 years (730 days)
+
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
 	y = train.water_level_elevation
 
 	plt.subplot(231)
@@ -124,12 +135,21 @@ def lag_plots(train):
 	plt.title('Lag of 2 Years')
 
 def seasonal_decomposition_graphs(train):
+	'''
+	This function takes in the train dataframe and plots seasonal decomposition graphs for the data.
+
+	Parameters: train - dataframe containing the target variable ready for EDA
+	'''
 	y = train.water_level_elevation.asfreq('W', method = 'bfill')
 	result = sm.tsa.seasonal_decompose(y)
 	result.plot()
 	None
 
 def precip_elevation_monthly_corr_test(train, weather):
+	'''
+	This function takes in the train and weather dataframes to run a pearson r test to test for correlation between target variable
+	and the precipitation when resampled by the month. It then prints out the results of the test and makes a visual plot of the data with a regression line.
+	'''
 	monthly_resample = train.resample('M').mean()
 	monthly_resample['precipitation'] = weather.total_monthly_precip.resample('M').mean()
 
@@ -141,6 +161,10 @@ def precip_elevation_monthly_corr_test(train, weather):
 	sns.lmplot(data = monthly_resample.dropna(), y='water_level_elevation', x ='precipitation')
 
 def precip_elevation_yearly_corr_test(train, weather):
+	'''
+	This function takes in the train and weather dataframes to run a pearson r test to test for correlation between target variable
+	and the precipitation when resampled by the year. It then prints out the results of the test and makes a visual plot of the data with a regression line.
+	'''
 	yearly_resample = train.copy()
 	yearly_resample = yearly_resample.resample('A').mean()
 	yearly_resample['precipitation'] = (weather.total_monthly_precip.resample('A').mean()).interpolate(method='polynomial', order=2)
@@ -154,6 +178,10 @@ def precip_elevation_yearly_corr_test(train, weather):
 
 
 def precip_usage_yearly_corr_test(train, weather, usage):
+	'''
+	This function takes in the train, weather, and usage dataframes to run a pearson r test to test for correlation between precipitation
+	and total water consumption when resampled by the year. It then prints out the results of the test and makes a visual plot of the data with a regression line.
+	'''
 	yearly_resample = train.copy()
 	yearly_resample = yearly_resample.resample('A').mean()
 	yearly_resample['precipitation'] = (weather.total_monthly_precip.resample('A').mean()).interpolate(method='polynomial', order=2)
@@ -167,6 +195,10 @@ def precip_usage_yearly_corr_test(train, weather, usage):
 	sns.lmplot(data = yearly_resample.dropna(), y='total_water_consumption', x ='precipitation')
 
 def usage_elevation_yearly_corr_test(train, usage):
+	'''
+	This function takes in the train, and usage dataframes to run a pearson r test to test for correlation between the target variable
+	and total water consumption when resampled by the year. It then prints out the results of the test and makes a visual plot of the data with a regression line.
+	'''
 	yearly_resample = train.copy()
 	yearly_resample = yearly_resample.resample('A').mean()
 	yearly_resample['total_water_consumption'] = (usage.total_consumption.resample('A').mean()).interpolate(method='polynomial', order=2).astype('int64')
@@ -179,6 +211,10 @@ def usage_elevation_yearly_corr_test(train, usage):
 	sns.lmplot(data = yearly_resample.dropna(), x='total_water_consumption', y ='water_level_elevation')
 
 def pop_elevation_yearly_corr_test(train, pop):
+	'''
+	This function takes in the train, and pop dataframes to run a pearson r test to test for correlation between the target variable
+	and population when resampled by the year. It then prints out the results of the test and makes a visual plot of the data with a regression line.
+	'''
 	yearly_resample = train.copy()
 	yearly_resample = yearly_resample.resample('A').mean()
 	yearly_resample['population'] = (pop.resample('A').mean()).interpolate(method='polynomial', order=2).astype('int64')

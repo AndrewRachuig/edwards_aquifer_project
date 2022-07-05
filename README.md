@@ -19,7 +19,8 @@ Ultimately, the goal is to predict future water levels through Time Series Analy
 
 
 ## Audience
-- Potential employers
+- Anyone curious about the climate and sustainable drinking water for the future
+    - Those wanting to understand the Edwards Aquifer better
 - Fellow Data Science students as well as instructors at Codeup
 
 ---

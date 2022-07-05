@@ -147,5 +147,5 @@ source: https://www.twdb.texas.gov/waterplanning/waterusesurvey/estimates/index.
 
 ## Reproduce this project
 - To run through this project yourself you will need to copy all material listed in this GitHub repo. If desired, you could download the original data from the sources provided above in this readme.
-- Additionally, you will need to have the FB Prophet library as well as other Data Science standard libraries (Pandas, Numpy, Matplotlib, Seaborn, etc.) installed on your computer to rerun this project.
+- Additionally, you will need to have the FB Prophet library as well as other Data Science standard libraries (Pandas, Numpy, Statsmodels, SKLearn, Matplotlib, Seaborn, etc.) installed on your computer to rerun this project.
 - Otherwise, all other requisite files for running the final project notebook (all data files, script files, Jupyter notebook files) are contained in this repository.

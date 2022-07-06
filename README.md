@@ -16,8 +16,19 @@ Ultimately, the goal is to predict future water levels through Time Series Analy
 - Perform a Time Series Analysis of the water level elevation for the Edwards Aquifer J17 Index Well.
     - Construct a resulting univariate time series model that accurately predicts water levels for J17 Index Well.
 - Make relevant suggestions for future water supply conservation strategies.
+---
+# Executive Summary
+- My best performing model, Facebook Prophet beat the baseline when predicting on out-of-sample data.
+- Water level elevation as a target is highly variable, borderline random. This makes accurate predictions nearly impossible for univariate time series models.
+- I found during Exploration that several of the datapoints I collected correlate to the target variable. 
+    - Variables that I have shown to be statistically correlated with the target variable are **total water consumption and precipitation amounts**. Using these in a multivariate model could increase chances for better predictions, but In order to use these in a such a model it would require additional work not done in the current project.
 
+**Recommendations**
+- Despite beating baseline, I don't feel confident in this model. I would **not suggest** it be used going forward as it seems likely that it was random chance that the model beat baseline in this instance.
+- Explore other reasons why the change in month-to-month water levels has grown increasingly variable over time post 1957/58.
+- Further refine the work done here by creating a multivariate time series model.
 
+---
 ## Audience
 - Anyone curious about the climate and sustainable drinking water for the future
     - Those wanting to understand the Edwards Aquifer better
@@ -134,16 +145,6 @@ source: https://www.twdb.texas.gov/waterplanning/waterusesurvey/estimates/index.
 - Make sure the explantory text in the Final Report notebook properly conveys the information I am presenting
 - Finish readme.md and other GitHub work to make the project presentable
 ---
-# Executive Summary
-- My best performing model, Facebook Prophet beat the baseline when predicting on out-of-sample data.
-- Water level elevation as a target is highly variable, borderline random. This makes accurate predictions nearly impossible for univariate time series models.
-- I found during Exploration that several of the datapoints I collected correlate to the target variable. 
-    - Variables that I have shown to be statistically correlated with the target variable are **total water consumption and precipitation amounts**. Using these in a multivariate model could increase chances for better predictions, but In order to use these in a such a model it would require additional work not done in the current project.
-
-**Recommendations**
-- Despite beating baseline, I don't feel confident in this model. I would **not suggest** it be used going forward as it seems likely that it was random chance that the model beat baseline in this instance.
-- Explore other reasons why the change in month-to-month water levels has grown increasingly variable over time post 1957/58.
-- Further refine the work done here by creating a multivariate time series model.
 
 ## Reproduce this project
 - To run through this project yourself you will need to copy all material listed in this GitHub repo. If desired, you could download the original data from the sources provided above in this readme.
